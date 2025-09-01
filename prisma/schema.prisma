@@ -1,0 +1,48 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+
+
+model User {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  name String 
+  age Int?
+  username String?
+
+  status Boolean @default(true)
+  createAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+
+  follower Follow[] @relation("follower")
+  following Follow[] @relation("following")
+}
+
+
+
+model Follow {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  followerId String @db.ObjectId
+  follower User @relation("follower", fields: [followerId], references: [id])
+  
+  followingId String @db.ObjectId
+  following User @relation("following", fields: [followingId], references: [id])
+
+   status Boolean @default(true)
+  createAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
